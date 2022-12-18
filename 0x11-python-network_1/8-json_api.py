@@ -1,21 +1,26 @@
 #!/usr/bin/python3
-"""Check status"""
+"""
+given letter as param, POST to http://0.0.0.0:5000/search_user
+usage: ./8-json_api.py [letter only]
+"""
+from sys import argv
 import requests
-import sys
 
-
-def searchapi():
-    """status"""
-    result = requests.get("https://swapi.co/api/people",
-                          params={"search": sys.argv[1]})
-
-    try:
-        data = result.json()
-        print("Number of results: {}".format(data["count"]))
-        for i in data["results"]:
-            print(i["name"])
-    except:
-        print("Not a valid JSON")
 
 if __name__ == "__main__":
-    searchapi()
+    if len(argv) < 2:
+        letter = ""
+    else:
+        letter = argv[1]
+    url = 'http://0.0.0.0:5000/search_user'
+    payload = {'q': letter}
+    r = requests.post(url, data=payload)
+
+    try:
+        dic = r.json()
+        if dic:
+            print("[{}] {}".format(dic.get('id'), dic.get('name')))
+        else:
+            print("No result")
+    except ValueError as e:
+        print("Not a valid JSON")
