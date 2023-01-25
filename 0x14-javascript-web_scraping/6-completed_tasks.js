@@ -1,28 +1,19 @@
 #!/usr/bin/node
-// status of a request
-const myRequest = require('request');
-const myUrl = process.argv[2];
-myRequest(myUrl, function (err, res, body) {
+// JS Script
+require('request').get(process.argv[2], function (err, r, body) {
   if (err) {
     console.log(err);
   } else {
-    let count = 0;
-    const dict1 = {};
-    const jsonBody = JSON.parse(body);
-    if (jsonBody != null) {
-      let userant = jsonBody[0].userId;
-      for (let j = 1; j < jsonBody.length; j++) {
-        for (let i = 0; i < jsonBody.length; i++) {
-          const user = jsonBody[i].userId;
-          if (jsonBody[i].completed === true && userant === user) {
-            count = count + 1;
-            dict1[jsonBody[i].userId] = count;
-          }
+    let res = {};
+    let temp = JSON.parse(body);
+    for (let i = 0; i < temp.length; i++) {
+      if (temp[i].completed) {
+        if (!(temp[i].userId in res)) {
+          res[temp[i].userId] = 0;
         }
-        userant = jsonBody[j].userId;
-        count = 0;
+        res[temp[i].userId] += 1;
       }
     }
-    console.log(dict1);
+    console.log(res);
   }
 });
